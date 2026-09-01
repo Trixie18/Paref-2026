@@ -66,8 +66,16 @@ python -m venv venv
 source venv/bin/activate        # Windows: venv\Scripts\activate
 pip install -r requirements.txt
 cp ../.env.example .env         # then edit backend/.env — see below
-uvicorn app.main:app --reload
+./run.sh                        # or: uvicorn app.main:app --reload
 ```
+
+`run.sh` always activates `backend/venv` itself before starting, regardless
+of what's already on your shell's PATH — worth using over a bare `uvicorn`
+command, since starting this app under a different Python environment (e.g.
+system Python or a Conda base env) has previously caused real, hard-to-trace
+bugs (a mismatched `urllib3` version intermittently crashed Google Sheets API
+calls). `app/main.py` also refuses to start at all under the wrong
+interpreter, as a second layer of protection.
 
 Runs at **http://localhost:8000**. Interactive API docs (Swagger UI) at
 **http://localhost:8000/docs**; ReDoc at **http://localhost:8000/redoc**.

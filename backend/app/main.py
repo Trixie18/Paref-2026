@@ -1,5 +1,7 @@
 import logging
+import sys
 from contextlib import asynccontextmanager
+from pathlib import Path
 
 from fastapi import FastAPI, Request
 from fastapi.middleware.cors import CORSMiddleware
@@ -13,6 +15,29 @@ from app.repositories import get_repository
 
 logging.basicConfig(level=logging.INFO)
 logger = logging.getLogger("paref")
+
+# This backend has, more than once, ended up started with a system/conda
+# Python instead of its own venv (typically: a fresh terminal running
+# `uvicorn app.main:app` without `source venv/bin/activate` first). That's
+# not just a style issue — it silently swaps in whatever dependency
+# versions happen to be installed system-wide, and a mismatched urllib3 in
+# particular has caused real, intermittent 500s on Sheets API calls
+# ("NoneType has no attribute 'sendall'" from urllib3's experimental HTTP/2
+# backend) that were painful to trace back to "wrong interpreter". Fail
+# loudly at startup instead of letting that reach a real request.
+_expected_venv = (Path(__file__).resolve().parents[1] / "venv").resolve()
+if Path(sys.prefix).resolve() != _expected_venv:
+    sys.exit(
+        "\nRefusing to start: this backend is running under\n"
+        f"  {sys.prefix}\n"
+        "instead of its own virtual environment at\n"
+        f"  {_expected_venv}\n\n"
+        "Run it via:\n"
+        "  cd backend && source venv/bin/activate && uvicorn app.main:app --reload\n\n"
+        "(A mismatched Python environment here has previously caused real, hard-to-"
+        "diagnose bugs — a different urllib3 version intermittently crashed Google "
+        "Sheets API calls.)\n"
+    )
 
 settings = get_settings()
 
