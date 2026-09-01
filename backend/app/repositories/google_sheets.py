@@ -290,20 +290,17 @@ class GoogleSheetsRepository(Repository):
         return variants
 
     def upsert_product_variant(self, product_id: str, variant: str, stock: int) -> ProductVariant:
-        rows = self._variants.all_rows()
-        for i, row in enumerate(rows, start=2):
-            if row["product_id"] == product_id and row["variant"] == variant:
-                self._variants.update_row(i, {"product_id": product_id, "variant": variant, "stock": stock})
-                return ProductVariant(product_id=product_id, variant=variant, stock=stock)
-        self._variants.append_row({"product_id": product_id, "variant": variant, "stock": stock})
+        row_numbers = self._variants.find_row_numbers({"product_id": product_id, "variant": variant})
+        if row_numbers:
+            self._variants.update_row(row_numbers[0], {"product_id": product_id, "variant": variant, "stock": stock})
+        else:
+            self._variants.append_row({"product_id": product_id, "variant": variant, "stock": stock})
         return ProductVariant(product_id=product_id, variant=variant, stock=stock)
 
     def delete_product_variant(self, product_id: str, variant: str) -> None:
-        rows = self._variants.all_rows()
-        for i, row in enumerate(rows, start=2):
-            if row["product_id"] == product_id and row["variant"] == variant:
-                self._variants.update_row(i, {"product_id": "", "variant": "", "stock": ""})
-                return
+        row_numbers = self._variants.find_row_numbers({"product_id": product_id, "variant": variant})
+        for row_number in row_numbers:
+            self._variants.update_row(row_number, {"product_id": "", "variant": "", "stock": ""})
 
     # -- Bundles -----------------------------------------------------------
     def get_bundles(self) -> list[Bundle]:
@@ -333,10 +330,8 @@ class GoogleSheetsRepository(Repository):
         return items
 
     def set_bundle_items(self, bundle_id: str, items: list[BundleItem]) -> list[BundleItem]:
-        rows = self._bundle_items.all_rows()
-        for i, row in reversed(list(enumerate(rows, start=2))):
-            if row["bundle_id"] == bundle_id:
-                self._bundle_items.update_row(i, {"bundle_id": "", "product_id": "", "quantity": ""})
+        for row_number in self._bundle_items.find_row_numbers({"bundle_id": bundle_id}):
+            self._bundle_items.update_row(row_number, {"bundle_id": "", "product_id": "", "quantity": ""})
         for item in items:
             self._bundle_items.append_row(item.model_dump())
         return items

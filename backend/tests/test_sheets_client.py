@@ -7,6 +7,7 @@ with the handful of gspread.Worksheet methods it actually calls, so a
 small fake stands in.
 """
 
+import re
 from unittest.mock import patch
 
 import gspread
@@ -192,3 +193,68 @@ def test_cache_expires_after_ttl(mock_monotonic):
     mock_monotonic.return_value = 1000.0 + 31  # past the TTL
     table.all_rows()
     assert ws.read_count == 2
+
+
+class StatefulWorksheet:
+    """A fake gspread.Worksheet that actually stores rows (including
+    blanks), so tests can drive realistic sequences of append/update/read
+    the way SheetTable's callers do, and inspect the resulting sheet
+    exactly as a human opening the real spreadsheet would see it."""
+
+    title = "Fake"
+
+    def __init__(self, header):
+        self.rows = [list(header)]
+
+    def get_all_values(self):
+        return [list(r) for r in self.rows]
+
+    def append_row(self, values, value_input_option="RAW"):
+        self.rows.append(list(values))
+
+    def update(self, range_name, values, value_input_option="RAW"):
+        row_number = int(re.match(r"[A-Z]+(\d+):", range_name).group(1))
+        while len(self.rows) < row_number:
+            self.rows.append([""] * len(self.rows[0]))
+        self.rows[row_number - 1] = list(values[0])
+
+
+@patch("app.repositories.sheets_client.time.sleep")
+def test_find_row_numbers_is_correct_even_with_blank_rows_earlier_in_the_sheet(mock_sleep):
+    # Regression test for a real bug: replacing a bundle's items blanks out
+    # its old rows (rather than deleting them) rather than shifting every
+    # row below up. A second bundle's edit must still find the *physical*
+    # row of its own items, not a position computed from the filtered
+    # (blank-skipping) list all_rows() returns - that mismatch was
+    # silently updating/blanking the wrong row, which left old rows
+    # un-cleared (so items duplicated) while new rows were still appended.
+    ws = StatefulWorksheet(["bundle_id", "product_id", "quantity"])
+    table = SheetTable(ws, ["bundle_id", "product_id", "quantity"])
+
+    def set_items(bundle_id, items):
+        for row_number in table.find_row_numbers({"bundle_id": bundle_id}):
+            table.update_row(row_number, {"bundle_id": "", "product_id": "", "quantity": ""})
+        for product_id, qty in items:
+            table.append_row({"bundle_id": bundle_id, "product_id": product_id, "quantity": qty})
+
+    set_items("BUNDLE-1", [("MEAL", 1), ("WATER", 1)])
+    set_items("BUNDLE-2", [("MEAL", 1), ("WATER", 1), ("RAFFLE", 1)])
+
+    # Editing BUNDLE-1 blanks its two rows (rows 2-3), leaving a gap before
+    # BUNDLE-2's rows - exactly the condition that broke row-number math.
+    set_items("BUNDLE-1", [("MEAL", 2)])
+
+    def active_rows_for(bundle_id):
+        return [r for r in table.all_rows() if r["bundle_id"] == bundle_id]
+
+    assert active_rows_for("BUNDLE-1") == [{"bundle_id": "BUNDLE-1", "product_id": "MEAL", "quantity": "2"}]
+    assert len(active_rows_for("BUNDLE-2")) == 3, "editing BUNDLE-1 must not touch BUNDLE-2's rows"
+
+    # Edit BUNDLE-1 again - if row numbers were still wrong, this would
+    # duplicate rather than replace.
+    set_items("BUNDLE-1", [("MEAL", 3), ("WATER", 1)])
+    assert sorted(active_rows_for("BUNDLE-1"), key=lambda r: r["product_id"]) == [
+        {"bundle_id": "BUNDLE-1", "product_id": "MEAL", "quantity": "3"},
+        {"bundle_id": "BUNDLE-1", "product_id": "WATER", "quantity": "1"},
+    ]
+    assert len(active_rows_for("BUNDLE-2")) == 3

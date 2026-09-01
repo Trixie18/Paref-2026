@@ -133,18 +133,36 @@ class SheetTable:
     def find_row_number(self, id_column: str, id_value: str) -> Optional[int]:
         """1-based sheet row number (including header) for the row whose
         id_column matches id_value, or None if not found."""
+        return next(iter(self.find_row_numbers({id_column: id_value})), None)
+
+    def find_row_numbers(self, match: dict[str, str]) -> list[int]:
+        """1-based sheet row numbers (including header) for every row whose
+        columns match ALL of the given {column: value} pairs.
+
+        Operates on the raw (unfiltered) sheet values, not all_rows() — that
+        matters because all_rows() skips blank rows to produce a clean
+        result set, which means positions in *that* list no longer
+        correspond to physical row numbers once any blank rows exist
+        earlier in the sheet (e.g. left behind by a previous call that
+        blanked out replaced rows here). Computing row numbers from a
+        filtered list was a real bug: it could blank out or upsert the
+        wrong physical row, silently duplicating or corrupting data on
+        every subsequent edit. Callers needing a row number to update must
+        go through here, never through enumerate(all_rows()).
+        """
         values = self._get_values()
         if not values:
-            return None
+            return []
         header = values[0]
         try:
-            col_index = header.index(id_column)
+            col_indices = [(header.index(col), val) for col, val in match.items()]
         except ValueError:
-            return None
-        for i, raw in enumerate(values[1:], start=2):
-            if len(raw) > col_index and raw[col_index] == id_value:
-                return i
-        return None
+            return []
+        return [
+            i
+            for i, raw in enumerate(values[1:], start=2)
+            if all(len(raw) > idx and raw[idx] == val for idx, val in col_indices)
+        ]
 
     def append_row(self, row: dict[str, Any]) -> None:
         values = [serialize_value(row.get(col, "")) for col in self._columns]
