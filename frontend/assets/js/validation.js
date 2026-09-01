@@ -37,3 +37,18 @@ export function validateRegisterForm(fields) {
 
   return errors;
 }
+
+/**
+ * Validates just { name, phone } - used by complete-profile.html, where
+ * the account is already authenticated so email/password aren't collected.
+ */
+export function validateNamePhone(fields) {
+  const errors = {};
+
+  if (!fields.name || !fields.name.trim()) errors.name = "Full name is required.";
+
+  if (!fields.phone || !fields.phone.trim()) errors.phone = "Mobile number is required.";
+  else if (!isValidPhone(fields.phone)) errors.phone = "Enter a valid mobile number.";
+
+  return errors;
+}

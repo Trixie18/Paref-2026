@@ -10,16 +10,30 @@
 //   // ...only reached when actually signed in
 
 import { authReady, getCurrentUser, getIdToken } from "./auth.js";
-import { getAdminProfile, ApiError } from "./api.js";
+import { getAdminProfile, getProfile, ApiError } from "./api.js";
 
-/** Redirects to login.html if not signed in. Resolves with {uid, email}
- * once confirmed signed in. */
+/** Redirects to login.html if not signed in, or to complete-profile.html
+ * if signed in (a real Firebase/dev session exists) but there's no
+ * matching Users-sheet row - e.g. the row was deleted by hand, or profile
+ * creation was interrupted right after sign-up. Without this check, every
+ * protected page would individually fail its own data fetches and show a
+ * raw "No profile exists for this account yet" error with no way out.
+ * Resolves with {uid, email} once confirmed signed in AND profiled. */
 export async function requireParent() {
   await authReady();
   const token = await getIdToken();
   if (!token) {
     window.location.href = "/login.html";
     return new Promise(() => {}); // never resolves; the redirect is in flight
+  }
+  try {
+    await getProfile();
+  } catch (err) {
+    if (err instanceof ApiError && err.status === 401) {
+      window.location.href = "/complete-profile.html";
+      return new Promise(() => {});
+    }
+    throw err; // some other failure (network, 500) - let the page show it
   }
   return getCurrentUser();
 }

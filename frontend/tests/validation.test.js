@@ -1,6 +1,6 @@
 import { test } from "node:test";
 import assert from "node:assert/strict";
-import { isValidEmail, isValidPhone, validateRegisterForm } from "../assets/js/validation.js";
+import { isValidEmail, isValidPhone, validateRegisterForm, validateNamePhone } from "../assets/js/validation.js";
 
 test("isValidEmail accepts well-formed addresses", () => {
   assert.equal(isValidEmail("maria@example.test"), true);
@@ -60,4 +60,15 @@ test("validateRegisterForm requires confirmPassword to match password exactly", 
     confirmPassword: "",
   });
   assert.equal(errors.confirmPassword, "Confirm your password.");
+});
+
+test("validateNamePhone returns no errors for a valid name/phone", () => {
+  const errors = validateNamePhone({ name: "Maria Dela Cruz", phone: "09171234567" });
+  assert.deepEqual(errors, {});
+});
+
+test("validateNamePhone flags missing/invalid name and phone independently", () => {
+  const errors = validateNamePhone({ name: "", phone: "123" });
+  assert.equal(errors.name, "Full name is required.");
+  assert.equal(errors.phone, "Enter a valid mobile number.");
 });

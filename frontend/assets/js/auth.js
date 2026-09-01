@@ -16,12 +16,12 @@
 // the fake dev-mode tokens. When you do, fill in the FIREBASE_* constants
 // below with your Firebase project's web app config (Project Settings ->
 // General -> Your apps -> SDK setup and configuration).
-export const AUTH_MODE = "dev"; // "dev" | "firebase"
+export const AUTH_MODE = "firebase"; // "dev" | "firebase"
 
-const FIREBASE_API_KEY = "";
-const FIREBASE_AUTH_DOMAIN = "";
-const FIREBASE_PROJECT_ID = "";
-const FIREBASE_APP_ID = "";
+const FIREBASE_API_KEY = "AIzaSyALlbT8CN7ndIjnT2yMzz7bewMlqJae7E8";
+const FIREBASE_AUTH_DOMAIN = "paref-f33c0.firebaseapp.com";
+const FIREBASE_PROJECT_ID = "paref-f33c0";
+const FIREBASE_APP_ID = "1:201407731167:web:1f8b1b31ce6bd42420206a";
 // -----------------------------------------------------------------------
 
 const CURRENT_KEY = "paref_dev_current";
@@ -90,7 +90,7 @@ export function randomUid() {
 
 // ---- Dev mode ---------------------------------------------------------
 
-async function devSignUp(email, _password) {
+export async function devSignUp(email, _password) {
   void _password; // dev mode cannot verify passwords without Firebase
   const normalized = email.trim().toLowerCase();
   const map = readEmailMap();
@@ -105,7 +105,7 @@ async function devSignUp(email, _password) {
   notify(user);
 }
 
-async function devSignIn(email, _password) {
+export async function devSignIn(email, _password) {
   void _password;
   const normalized = email.trim().toLowerCase();
   const map = readEmailMap();
@@ -120,18 +120,18 @@ async function devSignIn(email, _password) {
   notify(user);
 }
 
-async function devSignOut() {
+export async function devSignOut() {
   writeCurrentSession(null);
   notify(null);
 }
 
-async function devGetIdToken() {
+export async function devGetIdToken() {
   const session = readCurrentSession();
   if (!session) return null;
   return `dev:${session.uid}:${session.email || ""}`;
 }
 
-function devGetCurrentUser() {
+export function devGetCurrentUser() {
   return readCurrentSession();
 }
 

@@ -1,0 +1,71 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>Complete Your Profile - Paref Cup</title>
+<link rel="icon" type="image/svg+xml" href="data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHdpZHRoPSI0MCIgaGVpZ2h0PSI0NCIgdmlld0JveD0iMCAwIDQwIDQ0IiBmaWxsPSJub25lIj48cGF0aCBkPSJNMjAgMiAzNiA4djEyYzAgMTItNyAxOC41LTE2IDIyQzExIDM4LjUgNCAzMiA0IDIwVjhMMjAgMloiIGZpbGw9IiUyMzEwMWEyYiIgc3Ryb2tlPSIlMjNjMjc2MGEiIHN0cm9rZS13aWR0aD0iMS41Ii8+PHBhdGggZD0iTTIwIDggMzAgMTJ2OGMwIDguNS01IDEzLTEwIDE1LjVDMTUgMzMuNSAxMCAyOSAxMCAyMHYtOGwxMC00WiIgZmlsbD0ibm9uZSIgc3Ryb2tlPSIlMjNmYWY5ZjYiIHN0cm9rZS13aWR0aD0iMSIvPjx0ZXh0IHg9IjIwIiB5PSIyNSIgdGV4dC1hbmNob3I9Im1pZGRsZSIgZm9udC1zaXplPSIxNCIgZm9udC13ZWlnaHQ9IjcwMCIgZmlsbD0iJTIzZmFmOWY2IiBmb250LWZhbWlseT0iR2VvcmdpYSwgc2VyaWYiPlA8L3RleHQ+PC9zdmc+" />
+<link rel="preconnect" href="https://fonts.googleapis.com" />
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet" />
+<script src="https://cdn.tailwindcss.com"></script>
+<script>
+  tailwind.config = {
+    theme: {
+      extend: {
+        colors: {
+          navy: "#101a2b", "navy-light": "#1c2b45", background: "#faf9f6", foreground: "#16191f",
+          accent: "#c2760a", "accent-dark": "#9c5f08", border: "#e3e0d8", muted: "#6b6f76",
+          surface: "#ffffff", danger: "#b3261e", success: "#2f6f4e",
+        },
+        fontFamily: { sans: ["Inter", "system-ui", "-apple-system", "sans-serif"] },
+      },
+    },
+  };
+</script>
+<link rel="stylesheet" href="/assets/css/site.css" />
+</head>
+<body class="bg-background text-foreground">
+  <div id="loading" class="flex min-h-screen items-center justify-center">
+    <div class="spinner" aria-label="Loading"></div>
+  </div>
+
+  <div id="content" class="mx-auto flex min-h-screen max-w-md flex-col justify-center px-4 py-10" hidden>
+    <div class="mb-8 flex flex-col items-center gap-2">
+      <svg width="40" height="44" viewBox="0 0 40 44" fill="none" aria-hidden="true">
+        <path d="M20 2 36 8v12c0 12-7 18.5-16 22C11 38.5 4 32 4 20V8L20 2Z" fill="#101a2b" stroke="#c2760a" stroke-width="1.5" />
+        <path d="M20 8 30 12v8c0 8.5-5 13-10 15.5C15 33.5 10 29 10 20v-8l10-4Z" fill="none" stroke="#faf9f6" stroke-width="1" />
+        <text x="20" y="25" text-anchor="middle" font-size="14" font-weight="700" fill="#faf9f6" font-family="Georgia, serif">P</text>
+      </svg>
+      <h1 class="text-xl font-semibold text-navy">Complete your profile</h1>
+      <p class="text-center text-sm text-muted">
+        You're signed in, but we don't have a profile on file for this account yet.
+        Add a couple of details to finish setting it up.
+      </p>
+    </div>
+
+    <form id="complete-profile-form" novalidate class="flex flex-col gap-4">
+      <div class="field-wrapper">
+        <label for="name" class="field-label">Full name</label>
+        <input id="name" name="name" type="text" autocomplete="name" class="input-base" />
+        <p id="name-error" class="field-error" hidden></p>
+      </div>
+      <div class="field-wrapper">
+        <label for="phone" class="field-label">Mobile number</label>
+        <input id="phone" name="phone" type="tel" autocomplete="tel" placeholder="09171234567" class="input-base" />
+        <p id="phone-error" class="field-error" hidden></p>
+      </div>
+
+      <div id="form-error" class="error-banner" hidden></div>
+
+      <button type="submit" id="submit-btn" class="btn btn-primary btn-lg btn-full">Save and continue</button>
+    </form>
+
+    <p class="mt-6 text-center text-sm text-muted">
+      Wrong account? <a href="#" id="sign-out-link" class="font-medium text-navy hover:underline">Sign out</a>
+    </p>
+  </div>
+
+  <script type="module" src="/assets/js/pages/complete-profile.js"></script>
+</body>
+</html>

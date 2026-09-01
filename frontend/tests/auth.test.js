@@ -5,17 +5,18 @@ import { makeFakeLocalStorage } from "./helpers/fake-local-storage.js";
 // auth.js references the bare `localStorage` global, same as cart.js.
 globalThis.localStorage = makeFakeLocalStorage();
 
-const { readEmailMap, writeEmailMap, SEED_EMAIL_MAP, signUp, signIn, signOut, getIdToken, getCurrentUser, AUTH_MODE } = await import(
+// These tests exercise the dev-mode implementation directly (devSignUp,
+// devSignIn, ...) rather than the AUTH_MODE-switched signUp/signIn/etc.
+// AUTH_MODE is a live deployment setting - whichever value it currently
+// holds (e.g. "firebase" once a real project is configured) - so tests
+// must not depend on it being "dev" to exercise the dev-mode logic.
+const { readEmailMap, writeEmailMap, devSignUp, devSignIn, devSignOut, devGetIdToken, devGetCurrentUser } = await import(
   "../assets/js/auth.js"
 );
 
 beforeEach(async () => {
   globalThis.localStorage.clear();
-  await signOut();
-});
-
-test("auth.js defaults to dev mode", () => {
-  assert.equal(AUTH_MODE, "dev");
+  await devSignOut();
 });
 
 test("readEmailMap seeds itself with the backend's known seed accounts on first read", () => {
@@ -44,42 +45,42 @@ test("writeEmailMap adds a new entry without disturbing the seed accounts", () =
   assert.equal(reread["dana.admin@example.test"], "dev-admin-1");
 });
 
-test("signUp registers a brand-new email with a fresh uid and signs it in", async () => {
-  await signUp("newparent@example.test", "whatever");
-  const user = getCurrentUser();
+test("devSignUp registers a brand-new email with a fresh uid and signs it in", async () => {
+  await devSignUp("newparent@example.test", "whatever");
+  const user = devGetCurrentUser();
   assert.equal(user.email, "newparent@example.test");
   assert.ok(user.uid, "expected a uid to have been generated");
 });
 
-test("signUp rejects an email that is already registered", async () => {
-  await signUp("dupe@example.test", "whatever");
-  await assert.rejects(() => signUp("dupe@example.test", "different"), /already registered/i);
+test("devSignUp rejects an email that is already registered", async () => {
+  await devSignUp("dupe@example.test", "whatever");
+  await assert.rejects(() => devSignUp("dupe@example.test", "different"), /already registered/i);
 });
 
-test("signIn on a seeded email reuses that account's known uid", async () => {
-  await signIn("dana.admin@example.test", "whatever");
-  const user = getCurrentUser();
+test("devSignIn on a seeded email reuses that account's known uid", async () => {
+  await devSignIn("dana.admin@example.test", "whatever");
+  const user = devGetCurrentUser();
   assert.equal(user.uid, "dev-admin-1");
 });
 
-test("signIn on an unknown email creates and remembers a new uid (dev mode cannot verify passwords)", async () => {
-  await signIn("firsttime@example.test", "whatever");
-  const first = getCurrentUser();
-  await signOut();
-  await signIn("firsttime@example.test", "a-different-password");
-  const second = getCurrentUser();
+test("devSignIn on an unknown email creates and remembers a new uid (dev mode cannot verify passwords)", async () => {
+  await devSignIn("firsttime@example.test", "whatever");
+  const first = devGetCurrentUser();
+  await devSignOut();
+  await devSignIn("firsttime@example.test", "a-different-password");
+  const second = devGetCurrentUser();
   assert.equal(first.uid, second.uid, "signing in again should reuse the same uid, not mint a new one");
 });
 
-test("signOut clears the current session", async () => {
-  await signIn("someone@example.test", "whatever");
-  assert.ok(getCurrentUser());
-  await signOut();
-  assert.equal(getCurrentUser(), null);
+test("devSignOut clears the current session", async () => {
+  await devSignIn("someone@example.test", "whatever");
+  assert.ok(devGetCurrentUser());
+  await devSignOut();
+  assert.equal(devGetCurrentUser(), null);
 });
 
-test("getIdToken returns null when signed out and a dev:<uid>:<email> token when signed in", async () => {
-  assert.equal(await getIdToken(), null);
-  await signIn("dana.admin@example.test", "whatever");
-  assert.equal(await getIdToken(), "dev:dev-admin-1:dana.admin@example.test");
+test("devGetIdToken returns null when signed out and a dev:<uid>:<email> token when signed in", async () => {
+  assert.equal(await devGetIdToken(), null);
+  await devSignIn("dana.admin@example.test", "whatever");
+  assert.equal(await devGetIdToken(), "dev:dev-admin-1:dana.admin@example.test");
 });
