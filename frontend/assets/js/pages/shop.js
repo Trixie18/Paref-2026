@@ -129,7 +129,7 @@ function renderShirtCard(product) {
   const actionRow = el("div", "flex items-center justify-between gap-3 pt-1");
   const initialVariant = product.variants.find((v) => v.variant === selectedVariant);
   const stepper = qtyStepper(1, 1, initialVariant ? initialVariant.stock : 1, () => {});
-  const addBtn = el("button", "btn btn-primary flex-1 sm:flex-none", "Add to Cart");
+  const addBtn = el("button", "btn btn-primary btn-md flex-1 sm:flex-none", "Add to Cart");
   addBtn.type = "button";
   addBtn.addEventListener("click", () => {
     if (!selectedVariant) return;
@@ -168,7 +168,7 @@ function renderItemCard(product) {
 
   const actionRow = el("div", "flex items-center justify-between gap-3 pt-1");
   const stepper = qtyStepper(1, 1, product.stock, () => {});
-  const addBtn = el("button", "btn btn-primary flex-1 sm:flex-none", "Add to Cart");
+  const addBtn = el("button", "btn btn-primary btn-md flex-1 sm:flex-none", "Add to Cart");
   addBtn.type = "button";
   addBtn.addEventListener("click", () => {
     addItem({ product_id: product.product_id, quantity: stepper.getValue(), name: product.name });
@@ -197,7 +197,7 @@ function renderBundleCard(bundle) {
 
   const actionRow = el("div", "flex items-center justify-between gap-3 pt-1");
   const stepper = qtyStepper(1, 1, undefined, () => {});
-  const addBtn = el("button", "btn btn-primary flex-1 sm:flex-none", "Add to Cart");
+  const addBtn = el("button", "btn btn-primary btn-md flex-1 sm:flex-none", "Add to Cart");
   addBtn.type = "button";
   addBtn.addEventListener("click", () => {
     addItem({ bundle_id: bundle.bundle_id, quantity: stepper.getValue(), name: bundle.name });

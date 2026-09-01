@@ -122,7 +122,7 @@ if (requireAdminRole(profile)) {
             <button type="button" id="add-item-row" class="btn btn-outline btn-sm mt-2">Add item</button>
           </div>
           <div id="modal-error" class="error-banner" hidden></div>
-          <button type="submit" class="btn btn-primary btn-full">${isEdit ? "Save Changes" : "Create Bundle"}</button>
+          <button type="submit" class="btn btn-primary btn-lg btn-full">${isEdit ? "Save Changes" : "Create Bundle"}</button>
         </form>
       `,
     });

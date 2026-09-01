@@ -124,7 +124,7 @@ if (requireAdminRole(profile)) {
             This product needs a size (shirt)
           </label>
           <div id="modal-error" class="error-banner" hidden></div>
-          <button type="submit" class="btn btn-primary btn-full">${isEdit ? "Save Changes" : "Create Product"}</button>
+          <button type="submit" class="btn btn-primary btn-lg btn-full">${isEdit ? "Save Changes" : "Create Product"}</button>
         </form>
       `,
     });
