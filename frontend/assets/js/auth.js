@@ -15,8 +15,7 @@
 // Switch to "firebase" to use real Firebase Authentication instead of
 // the fake dev-mode tokens. When you do, fill in the FIREBASE_* constants
 // below with your Firebase project's web app config (Project Settings ->
-// General -> Your apps -> SDK setup and configuration), matching what the
-// Next.js app's NEXT_PUBLIC_FIREBASE_* env vars hold.
+// General -> Your apps -> SDK setup and configuration).
 export const AUTH_MODE = "dev"; // "dev" | "firebase"
 
 const FIREBASE_API_KEY = "";

@@ -13,7 +13,9 @@ analytics. Google Sheets is the database for this version.
   directly and is never trusted for price/total/inventory/permission
   decisions — the backend recomputes and re-validates everything server
   side on every request.
-- **Frontend**: Next.js + React + TypeScript + Tailwind, mobile-first.
+- **Frontend**: plain HTML + Tailwind (CDN, no build step) + vanilla
+  JavaScript, mobile-first. No React, no Next.js, no bundler — every file
+  in `frontend/` is exactly what the browser runs.
 - **Database**: Google Sheets, accessed only through a repository layer
   (`backend/app/repositories/`). An in-memory implementation of the same
   interface backs local dev and the test suite, so nothing needs a real
@@ -21,16 +23,17 @@ analytics. Google Sheets is the database for this version.
   makes a later move to PostgreSQL low-risk.
 - **Auth**: Firebase Authentication (email/password) if available in your
   Firebase project's free tier (it is, as of this writing). The frontend
-  signs in with the Firebase JS SDK and sends the resulting ID token to
+  signs in with the Firebase JS SDK (loaded directly from Google's CDN —
+  no build step needed to use it) and sends the resulting ID token to
   the backend, which verifies it with the Firebase Admin SDK before
   trusting anything about "who this request is". A `dev` auth mode
-  (fake `Bearer dev:<uid>` tokens) exists for local development and CI
-  without a Firebase project — see below. **Never enable it outside
-  local dev.**
+  (fake `Bearer dev:<uid>:<email>` tokens) exists for local development
+  and CI without a Firebase project — see below. **Never enable it
+  outside local dev.**
 
 ```
 football-event-app/           (this repo, named "Paref")
-├── frontend/                 Next.js app (parent + admin UI)
+├── frontend/                 plain HTML/CSS/JS app (parent + admin UI)
 ├── backend/
 │   └── app/
 │       ├── api/              route handlers only — no business logic
@@ -93,21 +96,26 @@ below, then set `REPOSITORY_BACKEND=google_sheets` and
 
 ### Frontend
 
+No install step — it's static files. From inside `frontend/`:
+
 ```bash
 cd frontend
-npm install
-cp .env.local.example .env.local   # then edit — see frontend/README.md
-npm run dev
+python3 -m http.server 5500
 ```
 
-Runs at **http://localhost:3000**.
+Then open **http://localhost:5500/index.html**. See
+[frontend/README.md](frontend/README.md) for how auth mode, the API base
+URL, and Firebase config are set (all are constants near the top of
+`frontend/assets/js/auth.js` and `api.js` — there's no `.env` file to
+copy since there's no build step to inject one).
 
 ### Running both together
 
-Start the backend first (port 8000), then the frontend (port 3000) in a
-second terminal. `NEXT_PUBLIC_API_BASE_URL` in `frontend/.env.local`
-should point at the backend; `CORS_ORIGINS` in `backend/.env` should
-include the frontend's origin (`http://localhost:3000` by default).
+Start the backend first (port 8000), then serve the frontend (port 5500)
+in a second terminal. The `API_BASE_URL` constant at the top of
+`frontend/assets/js/api.js` should point at the backend; `CORS_ORIGINS`
+in `backend/.env` should include the frontend's origin
+(`http://localhost:5500` by default).
 
 ### Tests
 
@@ -128,9 +136,12 @@ and already-claimed-order prevention.
 
 ## Environment variables
 
-See `.env.example` at the repo root for the full list with comments.
-Copy the relevant parts into `backend/.env` and `frontend/.env.local`.
-Never commit either filled-in file — both are covered by `.gitignore`.
+See `.env.example` at the repo root for the full backend list with
+comments — copy it to `backend/.env` and fill in real values (never
+commit the filled-in file; it's covered by `.gitignore`). The frontend
+has no `.env` file — its equivalent settings are constants at the top of
+`frontend/assets/js/auth.js` and `api.js`, since a plain static site has
+no build step to inject environment variables at.
 
 ## Google Sheets setup
 
@@ -142,10 +153,10 @@ worksheet/column schema the backend expects.
 
 1. Go to the [Firebase console](https://console.firebase.google.com/) and create a project (the free Spark plan covers everything this app needs).
 2. **Build → Authentication → Get started**, then enable the **Email/Password** sign-in provider.
-3. **Project settings → General → Your apps → Add app → Web app**. Copy the config values into `frontend/.env.local`:
-   `NEXT_PUBLIC_FIREBASE_API_KEY`, `NEXT_PUBLIC_FIREBASE_AUTH_DOMAIN`, `NEXT_PUBLIC_FIREBASE_PROJECT_ID`, `NEXT_PUBLIC_FIREBASE_APP_ID`. Set `NEXT_PUBLIC_AUTH_MODE=firebase`.
+3. **Project settings → General → Your apps → Add app → Web app**. Copy the config values into the constants near the top of `frontend/assets/js/auth.js`:
+   `FIREBASE_API_KEY`, `FIREBASE_AUTH_DOMAIN`, `FIREBASE_PROJECT_ID`, `FIREBASE_APP_ID`. Set `AUTH_MODE = "firebase"` in that same file.
 4. **Project settings → Service accounts → Generate new private key**. This downloads a JSON file with `project_id`, `client_email`, and `private_key`. Put those into `backend/.env` as `FIREBASE_PROJECT_ID`, `FIREBASE_CLIENT_EMAIL`, `FIREBASE_PRIVATE_KEY` (keep the `\n` sequences in the private key literal — the backend converts them back to real newlines). Set `AUTH_BACKEND=firebase`.
-5. The frontend signs users up/in with the Firebase JS SDK and sends the ID token as `Authorization: Bearer <token>`; the backend verifies it with the Firebase Admin SDK (`app/auth/firebase.py`) on every request and only ever trusts the UID that verification returns — not anything the client claims about itself.
+5. The frontend signs users up/in with the Firebase JS SDK (loaded straight from Google's CDN, no build step needed) and sends the ID token as `Authorization: Bearer <token>`; the backend verifies it with the Firebase Admin SDK (`app/auth/firebase.py`) on every request and only ever trusts the UID that verification returns — not anything the client claims about itself.
 6. A Firebase UID is associated with a Users-sheet row the first time `POST /api/auth/register` is called after sign-up (see `app/services/user_service.py`), and with an Admins-sheet row for admin/staff accounts (see below).
 
 ### Provisioning admin/staff accounts
@@ -229,12 +240,14 @@ Railway, Fly.io, a small VM, etc.):
 4. Upload the service account JSON as a secret file rather than
    committing it, and point `GOOGLE_SERVICE_ACCOUNT` at its path.
 
-**Frontend** — Vercel is the path of least resistance for Next.js:
-1. Import the `frontend/` directory as the project root.
-2. Set the `NEXT_PUBLIC_*` environment variables (Firebase config,
-   `NEXT_PUBLIC_AUTH_MODE=firebase`, `NEXT_PUBLIC_API_BASE_URL` pointing
-   at the deployed backend).
-3. Deploy.
+**Frontend** — it's a folder of static files, so any static host works
+(Vercel, Netlify, GitHub Pages, S3 + CloudFront, nginx, etc.):
+1. Before deploying, edit the constants at the top of
+   `frontend/assets/js/api.js` (`API_BASE_URL`) and `auth.js`
+   (`AUTH_MODE = "firebase"` plus the `FIREBASE_*` values) to point at
+   your deployed backend and Firebase project.
+2. Upload the `frontend/` directory's contents as-is — there is nothing
+   to build.
 
 Once both are live, add the frontend's real URL to the backend's
 `CORS_ORIGINS`.

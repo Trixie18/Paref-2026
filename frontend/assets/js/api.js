@@ -5,7 +5,7 @@
 //
 // This file never computes a price, total, or permission itself - it only
 // passes through whatever the backend returns. See the API contract in
-// frontend-static/README.md for the full endpoint list.
+// frontend/README.md for the full endpoint list.
 
 import { getIdToken } from "./auth.js";
 

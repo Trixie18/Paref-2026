@@ -24,7 +24,7 @@ class Settings(BaseSettings):
     FIREBASE_PRIVATE_KEY: str = ""
 
     # CORS
-    CORS_ORIGINS: str = "http://localhost:3000"
+    CORS_ORIGINS: str = "http://localhost:5500"
 
     EVENT_YEAR: int = 2026
 
