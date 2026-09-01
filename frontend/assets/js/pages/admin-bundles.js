@@ -2,6 +2,7 @@
 import { requireAdmin, requireAdminRole } from "../guard.js";
 import { listAdminBundles, listAdminProducts, createBundle, updateBundle, getErrorMessage } from "../api.js";
 import { openModal } from "../modal.js";
+import { wireLiveSearch } from "../search.js";
 
 const { profile } = await requireAdmin();
 
@@ -13,13 +14,17 @@ if (requireAdminRole(profile)) {
   const loading = document.getElementById("loading");
   const errorBanner = document.getElementById("error-banner");
   const grid = document.getElementById("bundle-grid");
+  const noResults = document.getElementById("no-results");
+  const searchInput = document.getElementById("search-input");
   const newBundleBtn = document.getElementById("new-bundle-btn");
 
   let bundles = [];
   let allProducts = [];
 
-  function renderGrid() {
-    grid.innerHTML = bundles
+  function renderGrid(list = bundles) {
+    grid.hidden = list.length === 0;
+    noResults.hidden = list.length !== 0;
+    grid.innerHTML = list
       .map(
         (b) => `
       <div class="card flex flex-col gap-2 p-4" data-id="${escapeHtml(b.bundle_id)}">
@@ -57,8 +62,18 @@ if (requireAdminRole(profile)) {
     const idx = bundles.findIndex((b) => b.bundle_id === updated.bundle_id);
     if (idx >= 0) bundles[idx] = updated;
     else bundles.push(updated);
-    renderGrid();
+    applySearch();
   }
+
+  const applySearch = wireLiveSearch(searchInput, {
+    getItems: () => bundles,
+    matches: (b, q) =>
+      b.bundle_id.toLowerCase().includes(q) ||
+      b.name.toLowerCase().includes(q) ||
+      (b.description || "").toLowerCase().includes(q) ||
+      b.items.some((i) => i.product_name.toLowerCase().includes(q)),
+    onFilter: (filtered) => renderGrid(filtered),
+  });
 
   async function toggleActive(bundle, btn) {
     btn.disabled = true;
@@ -181,7 +196,6 @@ if (requireAdminRole(profile)) {
   try {
     [bundles, allProducts] = await Promise.all([listAdminBundles(), listAdminProducts()]);
     loading.hidden = true;
-    grid.hidden = false;
     renderGrid();
   } catch (err) {
     loading.hidden = true;

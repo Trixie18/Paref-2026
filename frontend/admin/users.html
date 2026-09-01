@@ -31,8 +31,14 @@
     <main class="mx-auto w-full max-w-6xl flex-1 px-4 py-6">
       <div class="page-header"><h1 class="page-title">Parents</h1></div>
 
+      <div class="relative mb-4 sm:max-w-xs">
+        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round" class="pointer-events-none absolute left-3 top-1/2 -translate-y-1/2 text-muted"><circle cx="10.5" cy="10.5" r="6.5" /><path d="m19.5 19.5-4.3-4.3" /></svg>
+        <input id="search-input" placeholder="Search name, email, phone" class="h-10 w-full rounded-md border border-border bg-surface pl-9 pr-3 text-sm focus:outline-none focus:ring-2 focus:ring-navy/30" />
+      </div>
+
       <div id="error-banner" class="error-banner mb-4" hidden></div>
       <div id="loading" class="page-spinner"><span class="spinner spinner-lg"></span></div>
+      <p id="no-results" class="py-10 text-center text-sm text-muted" hidden>No parents found.</p>
 
       <div class="overflow-x-auto rounded-lg border border-border bg-surface" id="table-wrap" hidden>
         <table class="w-full min-w-[680px] text-sm">

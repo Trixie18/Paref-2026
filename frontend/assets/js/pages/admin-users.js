@@ -1,26 +1,34 @@
 // Logic for admin/users.html (ADMIN only).
 import { requireAdmin, requireAdminRole } from "../guard.js";
 import { listUsers, getErrorMessage } from "../api.js";
+import { wireLiveSearch } from "../search.js";
 
 const { profile } = await requireAdmin();
+
+function escapeHtml(s) {
+  return String(s ?? "").replace(/[&<>"']/g, (c) => ({ "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;", "'": "&#39;" }[c]));
+}
 
 if (requireAdminRole(profile)) {
   const loading = document.getElementById("loading");
   const errorBanner = document.getElementById("error-banner");
   const tableWrap = document.getElementById("table-wrap");
+  const noResults = document.getElementById("no-results");
+  const searchInput = document.getElementById("search-input");
   const rows = document.getElementById("user-rows");
 
-  try {
-    const users = await listUsers();
-    loading.hidden = true;
-    tableWrap.hidden = false;
-    rows.innerHTML = users
+  let users = [];
+
+  function renderTable(list = users) {
+    tableWrap.hidden = list.length === 0;
+    noResults.hidden = list.length !== 0;
+    rows.innerHTML = list
       .map(
         (u) => `
       <tr class="hover:bg-background">
-        <td class="px-4 py-3 font-medium text-foreground">${u.name}</td>
-        <td class="px-4 py-3 text-muted">${u.email}</td>
-        <td class="px-4 py-3 text-muted">${u.phone}</td>
+        <td class="px-4 py-3 font-medium text-foreground">${escapeHtml(u.name)}</td>
+        <td class="px-4 py-3 text-muted">${escapeHtml(u.email)}</td>
+        <td class="px-4 py-3 text-muted">${escapeHtml(u.phone)}</td>
         <td class="px-4 py-3">${u.player_count}</td>
         <td class="px-4 py-3">${u.order_count}</td>
         <td class="px-4 py-3"><span class="badge ${u.active ? "badge-success" : "badge-neutral"}">${u.active ? "Active" : "Inactive"}</span></td>
@@ -32,6 +40,18 @@ if (requireAdminRole(profile)) {
       </tr>`
       )
       .join("");
+  }
+
+  wireLiveSearch(searchInput, {
+    getItems: () => users,
+    matches: (u, q) => u.name.toLowerCase().includes(q) || u.email.toLowerCase().includes(q) || u.phone.toLowerCase().includes(q),
+    onFilter: (filtered) => renderTable(filtered),
+  });
+
+  try {
+    users = await listUsers();
+    loading.hidden = true;
+    renderTable();
   } catch (err) {
     loading.hidden = true;
     errorBanner.hidden = false;

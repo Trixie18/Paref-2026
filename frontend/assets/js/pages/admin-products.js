@@ -10,6 +10,7 @@ import {
   getErrorMessage,
 } from "../api.js";
 import { openModal } from "../modal.js";
+import { wireLiveSearch } from "../search.js";
 
 const { profile } = await requireAdmin();
 
@@ -21,13 +22,17 @@ if (requireAdminRole(profile)) {
   const loading = document.getElementById("loading");
   const errorBanner = document.getElementById("error-banner");
   const tableWrap = document.getElementById("table-wrap");
+  const noResults = document.getElementById("no-results");
+  const searchInput = document.getElementById("search-input");
   const rows = document.getElementById("product-rows");
   const newProductBtn = document.getElementById("new-product-btn");
 
   let products = [];
 
-  function renderTable() {
-    rows.innerHTML = products
+  function renderTable(list = products) {
+    tableWrap.hidden = list.length === 0;
+    noResults.hidden = list.length !== 0;
+    rows.innerHTML = list
       .map((p) => {
         const stockLabel = p.variant_required ? `${p.variants.reduce((s, v) => s + v.stock, 0)} (by size)` : p.stock;
         return `
@@ -65,8 +70,14 @@ if (requireAdminRole(profile)) {
     const idx = products.findIndex((p) => p.product_id === updated.product_id);
     if (idx >= 0) products[idx] = updated;
     else products.push(updated);
-    renderTable();
+    applySearch();
   }
+
+  const applySearch = wireLiveSearch(searchInput, {
+    getItems: () => products,
+    matches: (p, q) => p.product_id.toLowerCase().includes(q) || p.name.toLowerCase().includes(q) || p.category.toLowerCase().includes(q),
+    onFilter: (filtered) => renderTable(filtered),
+  });
 
   async function toggleActive(product, btn) {
     btn.disabled = true;
@@ -254,7 +265,6 @@ if (requireAdminRole(profile)) {
   try {
     products = await listAdminProducts();
     loading.hidden = true;
-    tableWrap.hidden = false;
     renderTable();
   } catch (err) {
     loading.hidden = true;
