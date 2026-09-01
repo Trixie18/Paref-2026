@@ -1,0 +1,52 @@
+@import "tailwindcss";
+
+:root {
+  --color-navy: #101a2b;
+  --color-navy-light: #1c2b45;
+  --color-background: #faf9f6;
+  --color-foreground: #16191f;
+  --color-accent: #c2760a;
+  --color-accent-dark: #9c5f08;
+  --color-border: #e3e0d8;
+  --color-muted: #6b6f76;
+  --color-surface: #ffffff;
+  --color-danger: #b3261e;
+  --color-success: #2f6f4e;
+}
+
+@theme inline {
+  --color-navy: var(--color-navy);
+  --color-navy-light: var(--color-navy-light);
+  --color-background: var(--color-background);
+  --color-foreground: var(--color-foreground);
+  --color-accent: var(--color-accent);
+  --color-accent-dark: var(--color-accent-dark);
+  --color-border: var(--color-border);
+  --color-muted: var(--color-muted);
+  --color-surface: var(--color-surface);
+  --color-danger: var(--color-danger);
+  --color-success: var(--color-success);
+  --font-sans: var(--font-inter);
+}
+
+* {
+  box-sizing: border-box;
+}
+
+html {
+  -webkit-text-size-adjust: 100%;
+}
+
+body {
+  background: var(--color-background);
+  color: var(--color-foreground);
+  font-family: var(--font-sans), system-ui, -apple-system, sans-serif;
+}
+
+/* Comfortable touch targets on mobile inputs */
+input,
+select,
+textarea,
+button {
+  font-family: inherit;
+}

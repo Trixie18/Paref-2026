@@ -1,0 +1,70 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>Player - Paref Cup</title>
+<link rel="icon" type="image/svg+xml" href="data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHdpZHRoPSI0MCIgaGVpZ2h0PSI0NCIgdmlld0JveD0iMCAwIDQwIDQ0IiBmaWxsPSJub25lIj48cGF0aCBkPSJNMjAgMiAzNiA4djEyYzAgMTItNyAxOC41LTE2IDIyQzExIDM4LjUgNCAzMiA0IDIwVjhMMjAgMloiIGZpbGw9IiUyMzEwMWEyYiIgc3Ryb2tlPSIlMjNjMjc2MGEiIHN0cm9rZS13aWR0aD0iMS41Ii8+PHBhdGggZD0iTTIwIDggMzAgMTJ2OGMwIDguNS01IDEzLTEwIDE1LjVDMTUgMzMuNSAxMCAyOSAxMCAyMHYtOGwxMC00WiIgZmlsbD0ibm9uZSIgc3Ryb2tlPSIlMjNmYWY5ZjYiIHN0cm9rZS13aWR0aD0iMSIvPjx0ZXh0IHg9IjIwIiB5PSIyNSIgdGV4dC1hbmNob3I9Im1pZGRsZSIgZm9udC1zaXplPSIxNCIgZm9udC13ZWlnaHQ9IjcwMCIgZmlsbD0iJTIzZmFmOWY2IiBmb250LWZhbWlseT0iR2VvcmdpYSwgc2VyaWYiPlA8L3RleHQ+PC9zdmc+" />
+<link rel="preconnect" href="https://fonts.googleapis.com" />
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet" />
+<script src="https://cdn.tailwindcss.com"></script>
+<script>
+  tailwind.config = {
+    theme: {
+      extend: {
+        colors: {
+          navy: "#101a2b", "navy-light": "#1c2b45", background: "#faf9f6", foreground: "#16191f",
+          accent: "#c2760a", "accent-dark": "#9c5f08", border: "#e3e0d8", muted: "#6b6f76",
+          surface: "#ffffff", danger: "#b3261e", success: "#2f6f4e",
+        },
+        fontFamily: { sans: ["Inter", "system-ui", "-apple-system", "sans-serif"] },
+      },
+    },
+  };
+</script>
+<link rel="stylesheet" href="/assets/css/site.css" />
+</head>
+<body class="bg-background text-foreground">
+  <div class="flex min-h-screen flex-col">
+    <div id="nav" data-nav-type="parent" data-nav-page="players"></div>
+    <main class="mx-auto w-full max-w-5xl flex-1 px-4 py-6 pb-24 sm:pb-6">
+      <div class="mx-auto max-w-lg">
+        <div class="page-header">
+          <h1 id="page-title" class="page-title">Add Player</h1>
+          <a href="/players.html" class="btn btn-ghost btn-sm">Back</a>
+        </div>
+
+        <div id="loading" class="page-spinner"><span class="spinner spinner-lg"></span></div>
+
+        <form id="player-form" novalidate class="flex flex-col gap-4" hidden>
+          <div class="field-wrapper">
+            <label for="player-name" class="field-label">Player name</label>
+            <input id="player-name" name="playerName" type="text" class="input-base" />
+          </div>
+          <div class="field-wrapper">
+            <label for="team" class="field-label">Team</label>
+            <input id="team" name="team" type="text" placeholder="e.g. Blue" class="input-base" />
+          </div>
+          <div class="field-wrapper">
+            <label for="age-group" class="field-label">Age group</label>
+            <input id="age-group" name="ageGroup" type="text" placeholder="e.g. U12" class="input-base" />
+          </div>
+          <div class="field-wrapper">
+            <label for="jersey-number" class="field-label">Jersey number</label>
+            <input id="jersey-number" name="jerseyNumber" type="text" placeholder="e.g. 7" class="input-base" />
+          </div>
+
+          <div id="error-banner" class="error-banner" hidden></div>
+          <p id="saved-message" class="text-sm text-success" hidden>Player updated.</p>
+
+          <button type="submit" id="submit-btn" class="btn btn-primary btn-full">Save Player</button>
+        </form>
+      </div>
+    </main>
+  </div>
+
+  <script type="module" src="/assets/js/nav.js"></script>
+  <script type="module" src="/assets/js/pages/player-form.js"></script>
+</body>
+</html>

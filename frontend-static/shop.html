@@ -1,0 +1,67 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>Shop - Paref Cup</title>
+<link rel="icon" type="image/svg+xml" href="data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHdpZHRoPSI0MCIgaGVpZ2h0PSI0NCIgdmlld0JveD0iMCAwIDQwIDQ0IiBmaWxsPSJub25lIj48cGF0aCBkPSJNMjAgMiAzNiA4djEyYzAgMTItNyAxOC41LTE2IDIyQzExIDM4LjUgNCAzMiA0IDIwVjhMMjAgMloiIGZpbGw9IiUyMzEwMWEyYiIgc3Ryb2tlPSIlMjNjMjc2MGEiIHN0cm9rZS13aWR0aD0iMS41Ii8+PHBhdGggZD0iTTIwIDggMzAgMTJ2OGMwIDguNS01IDEzLTEwIDE1LjVDMTUgMzMuNSAxMCAyOSAxMCAyMHYtOGwxMC00WiIgZmlsbD0ibm9uZSIgc3Ryb2tlPSIlMjNmYWY5ZjYiIHN0cm9rZS13aWR0aD0iMSIvPjx0ZXh0IHg9IjIwIiB5PSIyNSIgdGV4dC1hbmNob3I9Im1pZGRsZSIgZm9udC1zaXplPSIxNCIgZm9udC13ZWlnaHQ9IjcwMCIgZmlsbD0iJTIzZmFmOWY2IiBmb250LWZhbWlseT0iR2VvcmdpYSwgc2VyaWYiPlA8L3RleHQ+PC9zdmc+" />
+<link rel="preconnect" href="https://fonts.googleapis.com" />
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet" />
+<script src="https://cdn.tailwindcss.com"></script>
+<script>
+  tailwind.config = {
+    theme: {
+      extend: {
+        colors: {
+          navy: "#101a2b", "navy-light": "#1c2b45", background: "#faf9f6", foreground: "#16191f",
+          accent: "#c2760a", "accent-dark": "#9c5f08", border: "#e3e0d8", muted: "#6b6f76",
+          surface: "#ffffff", danger: "#b3261e", success: "#2f6f4e",
+        },
+        fontFamily: { sans: ["Inter", "system-ui", "-apple-system", "sans-serif"] },
+      },
+    },
+  };
+</script>
+<link rel="stylesheet" href="/assets/css/site.css" />
+</head>
+<body class="bg-background text-foreground">
+  <div class="flex min-h-screen flex-col">
+    <div id="nav" data-nav-type="parent" data-nav-page="shop"></div>
+    <main class="mx-auto w-full max-w-5xl flex-1 px-4 py-6 pb-24 sm:pb-6">
+      <div class="page-header">
+        <div>
+          <h1 class="page-title">Event Shop</h1>
+          <p class="page-subtitle">Shirts, individual items, and bundles for the event.</p>
+        </div>
+      </div>
+
+      <div id="error-banner" class="error-banner mb-4" hidden></div>
+      <div id="loading" class="page-spinner"><span class="spinner spinner-lg"></span></div>
+
+      <div id="shop-content" hidden>
+        <section class="mb-10">
+          <h2 class="mb-3 text-base font-semibold text-navy">Event Shirts</h2>
+          <div id="shirts-empty" class="empty-state" hidden><p class="font-medium text-foreground">No shirts available right now</p></div>
+          <div id="shirts-grid" class="grid grid-cols-1 gap-3 sm:grid-cols-2"></div>
+        </section>
+
+        <section class="mb-10">
+          <h2 class="mb-3 text-base font-semibold text-navy">Individual Event Items</h2>
+          <div id="items-empty" class="empty-state" hidden><p class="font-medium text-foreground">No items available right now</p></div>
+          <div id="items-grid" class="grid grid-cols-1 gap-3 sm:grid-cols-2"></div>
+        </section>
+
+        <section>
+          <h2 class="mb-3 text-base font-semibold text-navy">Bundles</h2>
+          <div id="bundles-empty" class="empty-state" hidden><p class="font-medium text-foreground">No bundles available right now</p></div>
+          <div id="bundles-grid" class="grid grid-cols-1 gap-3 sm:grid-cols-2"></div>
+        </section>
+      </div>
+    </main>
+  </div>
+
+  <script type="module" src="/assets/js/nav.js"></script>
+  <script type="module" src="/assets/js/pages/shop.js"></script>
+</body>
+</html>

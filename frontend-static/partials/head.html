@@ -1,0 +1,49 @@
+<!--
+  Reference copy of the shared <head> snippet.
+
+  This exact block (Tailwind CDN script + theme config + Google Fonts +
+  favicon + the site stylesheet) is pasted literally at the top of every
+  page's <head>, ABOVE that page's own <title> and any page-specific meta
+  tags. It is NOT fetched at runtime - unlike the nav bars (see
+  partials/parent-nav.html / admin-nav.html, loaded by assets/js/nav.js),
+  this snippet is short enough that plain copy-paste is more transparent
+  than adding a loader for it. If you ever need to change the color
+  palette or fonts, edit this file first, then copy the change into every
+  page's <head> (a quick project-wide find-and-replace works well since
+  the block is identical everywhere).
+
+  See README.md, section "How shared markup works", for the full
+  explanation of this pattern.
+-->
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<link rel="icon" type="image/svg+xml" href="data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHdpZHRoPSI0MCIgaGVpZ2h0PSI0NCIgdmlld0JveD0iMCAwIDQwIDQ0IiBmaWxsPSJub25lIj48cGF0aCBkPSJNMjAgMiAzNiA4djEyYzAgMTItNyAxOC41LTE2IDIyQzExIDM4LjUgNCAzMiA0IDIwVjhMMjAgMloiIGZpbGw9IiUyMzEwMWEyYiIgc3Ryb2tlPSIlMjNjMjc2MGEiIHN0cm9rZS13aWR0aD0iMS41Ii8+PHBhdGggZD0iTTIwIDggMzAgMTJ2OGMwIDguNS01IDEzLTEwIDE1LjVDMTUgMzMuNSAxMCAyOSAxMCAyMHYtOGwxMC00WiIgZmlsbD0ibm9uZSIgc3Ryb2tlPSIlMjNmYWY5ZjYiIHN0cm9rZS13aWR0aD0iMSIvPjx0ZXh0IHg9IjIwIiB5PSIyNSIgdGV4dC1hbmNob3I9Im1pZGRsZSIgZm9udC1zaXplPSIxNCIgZm9udC13ZWlnaHQ9IjcwMCIgZmlsbD0iJTIzZmFmOWY2IiBmb250LWZhbWlseT0iR2VvcmdpYSwgc2VyaWYiPlA8L3RleHQ+PC9zdmc+" />
+<link rel="preconnect" href="https://fonts.googleapis.com" />
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet" />
+<script src="https://cdn.tailwindcss.com"></script>
+<script>
+  tailwind.config = {
+    theme: {
+      extend: {
+        colors: {
+          navy: "#101a2b",
+          "navy-light": "#1c2b45",
+          background: "#faf9f6",
+          foreground: "#16191f",
+          accent: "#c2760a",
+          "accent-dark": "#9c5f08",
+          border: "#e3e0d8",
+          muted: "#6b6f76",
+          surface: "#ffffff",
+          danger: "#b3261e",
+          success: "#2f6f4e",
+        },
+        fontFamily: {
+          sans: ["Inter", "system-ui", "-apple-system", "sans-serif"],
+        },
+      },
+    },
+  };
+</script>
+<link rel="stylesheet" href="/assets/css/site.css" />

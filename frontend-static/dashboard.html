@@ -1,0 +1,94 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>Dashboard - Paref Cup</title>
+<link rel="icon" type="image/svg+xml" href="data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHdpZHRoPSI0MCIgaGVpZ2h0PSI0NCIgdmlld0JveD0iMCAwIDQwIDQ0IiBmaWxsPSJub25lIj48cGF0aCBkPSJNMjAgMiAzNiA4djEyYzAgMTItNyAxOC41LTE2IDIyQzExIDM4LjUgNCAzMiA0IDIwVjhMMjAgMloiIGZpbGw9IiUyMzEwMWEyYiIgc3Ryb2tlPSIlMjNjMjc2MGEiIHN0cm9rZS13aWR0aD0iMS41Ii8+PHBhdGggZD0iTTIwIDggMzAgMTJ2OGMwIDguNS01IDEzLTEwIDE1LjVDMTUgMzMuNSAxMCAyOSAxMCAyMHYtOGwxMC00WiIgZmlsbD0ibm9uZSIgc3Ryb2tlPSIlMjNmYWY5ZjYiIHN0cm9rZS13aWR0aD0iMSIvPjx0ZXh0IHg9IjIwIiB5PSIyNSIgdGV4dC1hbmNob3I9Im1pZGRsZSIgZm9udC1zaXplPSIxNCIgZm9udC13ZWlnaHQ9IjcwMCIgZmlsbD0iJTIzZmFmOWY2IiBmb250LWZhbWlseT0iR2VvcmdpYSwgc2VyaWYiPlA8L3RleHQ+PC9zdmc+" />
+<link rel="preconnect" href="https://fonts.googleapis.com" />
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet" />
+<script src="https://cdn.tailwindcss.com"></script>
+<script>
+  tailwind.config = {
+    theme: {
+      extend: {
+        colors: {
+          navy: "#101a2b", "navy-light": "#1c2b45", background: "#faf9f6", foreground: "#16191f",
+          accent: "#c2760a", "accent-dark": "#9c5f08", border: "#e3e0d8", muted: "#6b6f76",
+          surface: "#ffffff", danger: "#b3261e", success: "#2f6f4e",
+        },
+        fontFamily: { sans: ["Inter", "system-ui", "-apple-system", "sans-serif"] },
+      },
+    },
+  };
+</script>
+<link rel="stylesheet" href="/assets/css/site.css" />
+</head>
+<body class="bg-background text-foreground">
+  <div class="flex min-h-screen flex-col">
+    <div id="nav" data-nav-type="parent" data-nav-page="dashboard"></div>
+    <main class="mx-auto w-full max-w-5xl flex-1 px-4 py-6 pb-24 sm:pb-6">
+      <div id="loading" class="page-spinner"><span class="spinner spinner-lg"></span></div>
+      <div id="content" hidden>
+        <h1 class="text-xl font-semibold text-navy sm:text-2xl">Welcome, <span id="welcome-name">there</span></h1>
+        <p class="mt-1 text-sm text-muted">Here's a quick look at your account.</p>
+
+        <div id="error-banner" class="error-banner mt-4" hidden></div>
+
+        <div class="mt-6 grid grid-cols-1 gap-3 sm:grid-cols-3">
+          <a href="/players.html" class="card flex items-center justify-between p-4 transition-colors hover:border-navy">
+            <div class="flex items-center gap-3">
+              <span class="flex h-10 w-10 items-center justify-center rounded-md bg-navy/5 text-navy">
+                <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><circle cx="9" cy="8" r="3" /><path d="M2.8 19a6.2 6.2 0 0 1 12.4 0" /><path d="M15.5 5.5a3 3 0 0 1 0 5.8" /><path d="M17 13.3a6.2 6.2 0 0 1 4.2 5.7" /></svg>
+              </span>
+              <div>
+                <p class="text-sm text-muted">My Players</p>
+                <p id="player-count" class="text-lg font-semibold text-foreground">0</p>
+              </div>
+            </div>
+            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round" class="text-muted"><path d="m9 5.5 7 6.5-7 6.5" /></svg>
+          </a>
+          <a href="/orders.html" class="card flex items-center justify-between p-4 transition-colors hover:border-navy">
+            <div class="flex items-center gap-3">
+              <span class="flex h-10 w-10 items-center justify-center rounded-md bg-navy/5 text-navy">
+                <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><rect x="5" y="3.5" width="14" height="17" rx="1.5" /><path d="M8.5 8h7M8.5 12h7M8.5 16h4.5" /></svg>
+              </span>
+              <div>
+                <p class="text-sm text-muted">My Orders</p>
+                <p id="order-count" class="text-lg font-semibold text-foreground">0</p>
+              </div>
+            </div>
+            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round" class="text-muted"><path d="m9 5.5 7 6.5-7 6.5" /></svg>
+          </a>
+          <a href="/cart.html" class="card flex items-center justify-between p-4 transition-colors hover:border-navy">
+            <div class="flex items-center gap-3">
+              <span class="flex h-10 w-10 items-center justify-center rounded-md bg-navy/5 text-navy">
+                <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><circle cx="9" cy="20" r="1.4" fill="currentColor" stroke="none" /><circle cx="17" cy="20" r="1.4" fill="currentColor" stroke="none" /><path d="M3 4h2l2.2 11.2a1.5 1.5 0 0 0 1.5 1.3h7.7a1.5 1.5 0 0 0 1.47-1.2L20 8H6" /></svg>
+              </span>
+              <div>
+                <p class="text-sm text-muted">Cart</p>
+                <p id="cart-count" class="text-lg font-semibold text-foreground">0</p>
+              </div>
+            </div>
+            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round" class="text-muted"><path d="m9 5.5 7 6.5-7 6.5" /></svg>
+          </a>
+        </div>
+
+        <div class="mt-8">
+          <a href="/shop.html" class="card flex items-center justify-between p-4 hover:border-navy">
+            <div>
+              <p class="font-medium text-foreground">Visit the event shop</p>
+              <p class="text-sm text-muted">Shirts, individual items, and bundles.</p>
+            </div>
+            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round" class="text-muted"><path d="m9 5.5 7 6.5-7 6.5" /></svg>
+          </a>
+        </div>
+      </div>
+    </main>
+  </div>
+
+  <script type="module" src="/assets/js/nav.js"></script>
+  <script type="module" src="/assets/js/pages/dashboard.js"></script>
+</body>
+</html>

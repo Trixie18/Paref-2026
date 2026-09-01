@@ -1,0 +1,99 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>Checkout - Paref Cup</title>
+<link rel="icon" type="image/svg+xml" href="data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHdpZHRoPSI0MCIgaGVpZ2h0PSI0NCIgdmlld0JveD0iMCAwIDQwIDQ0IiBmaWxsPSJub25lIj48cGF0aCBkPSJNMjAgMiAzNiA4djEyYzAgMTItNyAxOC41LTE2IDIyQzExIDM4LjUgNCAzMiA0IDIwVjhMMjAgMloiIGZpbGw9IiUyMzEwMWEyYiIgc3Ryb2tlPSIlMjNjMjc2MGEiIHN0cm9rZS13aWR0aD0iMS41Ii8+PHBhdGggZD0iTTIwIDggMzAgMTJ2OGMwIDguNS01IDEzLTEwIDE1LjVDMTUgMzMuNSAxMCAyOSAxMCAyMHYtOGwxMC00WiIgZmlsbD0ibm9uZSIgc3Ryb2tlPSIlMjNmYWY5ZjYiIHN0cm9rZS13aWR0aD0iMSIvPjx0ZXh0IHg9IjIwIiB5PSIyNSIgdGV4dC1hbmNob3I9Im1pZGRsZSIgZm9udC1zaXplPSIxNCIgZm9udC13ZWlnaHQ9IjcwMCIgZmlsbD0iJTIzZmFmOWY2IiBmb250LWZhbWlseT0iR2VvcmdpYSwgc2VyaWYiPlA8L3RleHQ+PC9zdmc+" />
+<link rel="preconnect" href="https://fonts.googleapis.com" />
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet" />
+<script src="https://cdn.tailwindcss.com"></script>
+<script>
+  tailwind.config = {
+    theme: {
+      extend: {
+        colors: {
+          navy: "#101a2b", "navy-light": "#1c2b45", background: "#faf9f6", foreground: "#16191f",
+          accent: "#c2760a", "accent-dark": "#9c5f08", border: "#e3e0d8", muted: "#6b6f76",
+          surface: "#ffffff", danger: "#b3261e", success: "#2f6f4e",
+        },
+        fontFamily: { sans: ["Inter", "system-ui", "-apple-system", "sans-serif"] },
+      },
+    },
+  };
+</script>
+<link rel="stylesheet" href="/assets/css/site.css" />
+</head>
+<body class="bg-background text-foreground">
+  <div class="flex min-h-screen flex-col">
+    <div id="nav" data-nav-type="parent" data-nav-page="cart"></div>
+    <main class="mx-auto w-full max-w-5xl flex-1 px-4 py-6 pb-24 sm:pb-6">
+      <div id="empty-state" class="empty-state" hidden>
+        <p class="font-medium text-foreground">Your cart is empty</p>
+        <p class="max-w-sm text-sm text-muted">Add something from the shop before checking out.</p>
+        <a href="/shop.html" class="btn btn-primary btn-sm">Go to Shop</a>
+      </div>
+
+      <div id="checkout-content" class="mx-auto max-w-lg" hidden>
+        <div class="page-header"><h1 class="page-title">Checkout</h1></div>
+
+        <div class="card mb-6 p-4">
+          <h2 class="mb-2 text-sm font-semibold text-navy">Order Summary</h2>
+          <div id="summary-loading" class="page-spinner"><span class="spinner"></span></div>
+          <div id="summary-content" hidden>
+            <ul id="summary-lines" class="flex flex-col gap-1.5 text-sm"></ul>
+            <div class="mt-3 flex justify-between border-t border-border pt-3 font-semibold text-navy">
+              <span>Total</span>
+              <span id="summary-total">₱0.00</span>
+            </div>
+          </div>
+        </div>
+
+        <div id="calc-error" class="error-banner mb-4" hidden></div>
+
+        <form id="checkout-form" novalidate class="flex flex-col gap-4">
+          <div class="field-wrapper">
+            <label for="parent-name" class="field-label">Parent name</label>
+            <input id="parent-name" name="parentName" type="text" class="input-base" />
+          </div>
+          <div class="field-wrapper">
+            <label for="contact-number" class="field-label">Contact number</label>
+            <input id="contact-number" name="contactNumber" type="tel" class="input-base" />
+          </div>
+
+          <div>
+            <p class="mb-1.5 text-sm font-medium text-foreground">Payment method</p>
+            <div class="flex flex-col gap-2" id="payment-options">
+              <label class="payment-option">
+                <input type="radio" name="payment_method" value="GCASH" checked class="h-4 w-4 accent-navy" />
+                GCash
+              </label>
+              <label class="payment-option">
+                <input type="radio" name="payment_method" value="BANK_TRANSFER" class="h-4 w-4 accent-navy" />
+                Bank Transfer
+              </label>
+              <label class="payment-option">
+                <input type="radio" name="payment_method" value="CASH_AT_EVENT" class="h-4 w-4 accent-navy" />
+                Cash at Event
+              </label>
+            </div>
+          </div>
+
+          <div class="field-wrapper">
+            <label for="notes" class="field-label">Notes (optional)</label>
+            <textarea id="notes" name="notes" class="textarea-base"></textarea>
+          </div>
+
+          <div id="form-error" class="error-banner" hidden></div>
+
+          <button type="submit" id="submit-btn" class="btn btn-primary btn-lg btn-full">Place Order</button>
+        </form>
+      </div>
+    </main>
+  </div>
+
+  <script type="module" src="/assets/js/nav.js"></script>
+  <script type="module" src="/assets/js/pages/checkout.js"></script>
+</body>
+</html>
