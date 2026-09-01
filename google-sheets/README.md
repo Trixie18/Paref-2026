@@ -75,7 +75,14 @@ renamed.
 `user_id | firebase_uid | name | email | phone | created_at | active`
 
 ### Players
-`player_id | user_id | player_name | team | age_group | jersey_number | created_at`
+`player_id | user_id | parent_name | player_name | team | age_group | jersey_number | created_at`
+
+`user_id` is the authoritative link to the parent's row in Users.
+`parent_name` is a denormalized copy of the parent's name at the time the
+player was added — purely so the raw sheet is readable at a glance
+without cross-referencing Users by id (same idea as Order_Items storing
+`product_name`). It won't update if the parent later renames their
+profile; that's expected.
 
 ### Products
 `product_id | name | description | category | price | stock | active | image_url | variant_required | created_at | updated_at`

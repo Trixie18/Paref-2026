@@ -29,7 +29,7 @@ from app.repositories.base import Repository
 from app.repositories.sheets_client import SheetTable, get_or_create_worksheet, open_spreadsheet
 
 USERS_COLUMNS = ["user_id", "firebase_uid", "name", "email", "phone", "created_at", "active"]
-PLAYERS_COLUMNS = ["player_id", "user_id", "player_name", "team", "age_group", "jersey_number", "created_at"]
+PLAYERS_COLUMNS = ["player_id", "user_id", "parent_name", "player_name", "team", "age_group", "jersey_number", "created_at"]
 PRODUCTS_COLUMNS = [
     "product_id", "name", "description", "category", "price", "stock",
     "active", "image_url", "variant_required", "created_at", "updated_at",
@@ -134,9 +134,9 @@ class GoogleSheetsRepository(Repository):
     @staticmethod
     def _row_to_player(row: dict[str, str]) -> Player:
         return Player(
-            player_id=row["player_id"], user_id=row["user_id"], player_name=row["player_name"],
-            team=row["team"], age_group=row["age_group"], jersey_number=row["jersey_number"],
-            created_at=_dt(row["created_at"]) or GoogleSheetsRepository._now(),
+            player_id=row["player_id"], user_id=row["user_id"], parent_name=row["parent_name"],
+            player_name=row["player_name"], team=row["team"], age_group=row["age_group"],
+            jersey_number=row["jersey_number"], created_at=_dt(row["created_at"]) or GoogleSheetsRepository._now(),
         )
 
     @staticmethod

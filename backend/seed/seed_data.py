@@ -57,8 +57,8 @@ def seed(repo: Repository | None = None) -> None:
         players.append(
             repo.create_player(
                 Player(
-                    player_id="", user_id=users[user_index].user_id, player_name=player_name,
-                    team=team, age_group=age_group, jersey_number=jersey, created_at=now,
+                    player_id="", user_id=users[user_index].user_id, parent_name=users[user_index].name,
+                    player_name=player_name, team=team, age_group=age_group, jersey_number=jersey, created_at=now,
                 )
             )
         )

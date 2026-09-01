@@ -24,6 +24,7 @@ def create_player(repo: Repository, user: User, req: PlayerCreateRequest) -> Pla
         Player(
             player_id="",
             user_id=user.user_id,
+            parent_name=user.name,
             player_name=req.player_name,
             team=req.team,
             age_group=req.age_group,
