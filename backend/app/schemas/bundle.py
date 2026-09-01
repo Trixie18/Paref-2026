@@ -1,4 +1,4 @@
-from pydantic import BaseModel
+from pydantic import BaseModel, Field
 
 
 class BundleItemResponse(BaseModel):
@@ -20,20 +20,20 @@ class BundleResponse(BaseModel):
 
 class BundleItemInput(BaseModel):
     product_id: str
-    quantity: int
+    quantity: int = Field(gt=0)
 
 
 class BundleCreateRequest(BaseModel):
     bundle_id: str
     name: str
     description: str = ""
-    price: float
+    price: float = Field(ge=0)
     items: list[BundleItemInput]
 
 
 class BundleUpdateRequest(BaseModel):
     name: str | None = None
     description: str | None = None
-    price: float | None = None
+    price: float | None = Field(default=None, ge=0)
     active: bool | None = None
     items: list[BundleItemInput] | None = None

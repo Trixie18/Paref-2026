@@ -117,3 +117,47 @@ def test_admin_can_manage_products_and_bundles(client, admin_account, catalog):
     assert r.status_code == 200
     actions = {e["action"] for e in r.json()}
     assert {"UPDATE_PRODUCT", "DEACTIVATE_PRODUCT", "UPDATE_BUNDLE"}.issubset(actions)
+
+
+def test_negative_price_and_stock_are_rejected(client, admin_account, catalog):
+    headers = auth_header(admin_account.firebase_uid)
+
+    r = client.post(
+        "/api/admin/products",
+        json={"product_id": "NEG-1", "name": "Negative", "category": "ITEM", "price": -5, "stock": 10},
+        headers=headers,
+    )
+    assert r.status_code == 422
+
+    r = client.post(
+        "/api/admin/products",
+        json={"product_id": "NEG-2", "name": "Negative", "category": "ITEM", "price": 5, "stock": -10},
+        headers=headers,
+    )
+    assert r.status_code == 422
+
+    r = client.put("/api/admin/products/MEAL", json={"price": -1}, headers=headers)
+    assert r.status_code == 422
+
+    r = client.put("/api/admin/products/MEAL", json={"stock": -1}, headers=headers)
+    assert r.status_code == 422
+
+    r = client.put("/api/admin/products/VINTA/variants", json={"variant": "M", "stock": -3}, headers=headers)
+    assert r.status_code == 422
+
+    r = client.put("/api/admin/bundles/BUNDLE-1", json={"price": -10}, headers=headers)
+    assert r.status_code == 422
+
+    r = client.post(
+        "/api/admin/bundles",
+        json={"bundle_id": "NEG-BUNDLE", "name": "Negative", "price": -1, "items": [{"product_id": "MEAL", "quantity": 1}]},
+        headers=headers,
+    )
+    assert r.status_code == 422
+
+    r = client.post(
+        "/api/admin/bundles",
+        json={"bundle_id": "NEG-BUNDLE-2", "name": "Negative Qty", "price": 10, "items": [{"product_id": "MEAL", "quantity": 0}]},
+        headers=headers,
+    )
+    assert r.status_code == 422
