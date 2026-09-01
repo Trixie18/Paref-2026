@@ -59,9 +59,6 @@ async function initNav() {
       container.querySelectorAll("[data-admin-role]").forEach((el) => {
         el.textContent = profile.role;
       });
-      container.querySelectorAll("[data-admin-email]").forEach((el) => {
-        el.textContent = profile.email;
-      });
       if (profile.role !== "ADMIN") {
         container.querySelectorAll("[data-admin-only]").forEach((el) => el.remove());
       }
