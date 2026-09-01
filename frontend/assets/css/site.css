@@ -34,6 +34,19 @@
 
 /* ---- Base ------------------------------------------------------------ */
 
+/* The browser's default [hidden] { display: none } rule lives in the
+   user-agent stylesheet, which loses to ANY author rule of equal or
+   higher specificity - including plain classes like .flex, .page-spinner,
+   or .error-banner that set their own `display`. Every page here toggles
+   visibility by setting element.hidden = true/false in JS, so without
+   this override, a hidden loading spinner or error banner would still
+   render (just with hidden's semantics ignored) whenever it also carries
+   a class that sets `display`. This single rule restores `hidden` to
+   actually mean hidden, everywhere, unconditionally. */
+[hidden] {
+  display: none !important;
+}
+
 html {
   -webkit-text-size-adjust: 100%;
 }
