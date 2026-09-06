@@ -1,5 +1,5 @@
 {
   "deploy": {
-    "startCommand": "uvicorn app.main:app --host 0.0.0.0 --port $PORT"
+    "startCommand": "if [ -n \"$GOOGLE_SERVICE_ACCOUNT_JSON\" ]; then printf '%s' \"$GOOGLE_SERVICE_ACCOUNT_JSON\" > /app/service-account.json; fi; exec uvicorn app.main:app --host 0.0.0.0 --port $PORT"
   }
 }

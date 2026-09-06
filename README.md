@@ -245,16 +245,21 @@ builder):
    to, not the repo root, and won't detect a Python app otherwise).
 2. Set the same environment variables as `backend/.env` (production
    values: `REPOSITORY_BACKEND=google_sheets`, `AUTH_BACKEND=firebase`,
-   `SEED_ON_STARTUP=false`, real `GOOGLE_SHEET_ID`/`GOOGLE_SERVICE_ACCOUNT`/
-   Firebase Admin credentials, `CORS_ORIGINS` including your deployed
-   frontend's URL). Railway injects `PORT` automatically — the
-   `startCommand` in `railpack.json` already reads it.
+   `SEED_ON_STARTUP=false`, real `GOOGLE_SHEET_ID`, Firebase Admin
+   credentials, `CORS_ORIGINS` including your deployed frontend's URL).
+   Railway injects `PORT` automatically — the `startCommand` in
+   `railpack.json` already reads it.
 3. **Run exactly one instance** (Railway replica) against a given
    spreadsheet — see the Google Sheets concurrency limitations above.
-4. Upload the service account JSON as a Railway
-   [volume](https://docs.railway.com/reference/volumes) or paste its
-   contents into a variable and write it to disk at boot, rather than
-   committing it, and point `GOOGLE_SERVICE_ACCOUNT` at that path.
+4. The service account JSON can't be committed, so it isn't on disk in
+   the container by default. Instead, set `GOOGLE_SERVICE_ACCOUNT_JSON`
+   to the full contents of the downloaded key file and
+   `GOOGLE_SERVICE_ACCOUNT=/app/service-account.json`; `railpack.json`'s
+   `startCommand` writes the former to the latter path before starting
+   uvicorn. (A [volume](https://docs.railway.com/reference/volumes)
+   works too, if you'd rather mount the file directly — in that case
+   skip `GOOGLE_SERVICE_ACCOUNT_JSON` and point `GOOGLE_SERVICE_ACCOUNT`
+   at the mount path instead.)
 
 **Frontend** — it's a folder of static files, so any static host works
 (Vercel, Netlify, GitHub Pages, S3 + CloudFront, nginx, etc.):
