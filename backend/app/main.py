@@ -1,4 +1,5 @@
 import logging
+import os
 import sys
 from contextlib import asynccontextmanager
 from pathlib import Path
@@ -26,7 +27,7 @@ logger = logging.getLogger("paref")
 # backend) that were painful to trace back to "wrong interpreter". Fail
 # loudly at startup instead of letting that reach a real request.
 _expected_venv = (Path(__file__).resolve().parents[1] / "venv").resolve()
-if Path(sys.prefix).resolve() != _expected_venv:
+if not os.environ.get("RAILWAY_ENVIRONMENT") and Path(sys.prefix).resolve() != _expected_venv:
     sys.exit(
         "\nRefusing to start: this backend is running under\n"
         f"  {sys.prefix}\n"

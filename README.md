@@ -234,19 +234,27 @@ none of them import `gspread` or know Sheets exists.
 This MVP has no deployment pipeline configured; the notes below are
 enough to get a working deployment.
 
-**Backend** — any host that runs a long-lived Python process (Render,
-Railway, Fly.io, a small VM, etc.):
-1. Set the same environment variables as `backend/.env` (production
+**Backend** — deploys to [Railway](https://railway.app) as a long-lived
+Python process (`backend/railpack.json` and `backend/.python-version`
+are already set up for Railway's [Railpack](https://railpack.com)
+builder):
+1. Create a Railway service from this repo and set its **Root
+   Directory** to `backend` (the service builds/runs from there, so
+   `railpack.json`, `requirements.txt`, and `.python-version` are all
+   found relative to it — Railpack scans whatever directory this is set
+   to, not the repo root, and won't detect a Python app otherwise).
+2. Set the same environment variables as `backend/.env` (production
    values: `REPOSITORY_BACKEND=google_sheets`, `AUTH_BACKEND=firebase`,
    `SEED_ON_STARTUP=false`, real `GOOGLE_SHEET_ID`/`GOOGLE_SERVICE_ACCOUNT`/
    Firebase Admin credentials, `CORS_ORIGINS` including your deployed
-   frontend's URL).
-2. `pip install -r requirements.txt`, then run
-   `uvicorn app.main:app --host 0.0.0.0 --port $PORT`.
-3. **Run exactly one worker process** against a given spreadsheet — see
-   the Google Sheets concurrency limitations above.
-4. Upload the service account JSON as a secret file rather than
-   committing it, and point `GOOGLE_SERVICE_ACCOUNT` at its path.
+   frontend's URL). Railway injects `PORT` automatically — the
+   `startCommand` in `railpack.json` already reads it.
+3. **Run exactly one instance** (Railway replica) against a given
+   spreadsheet — see the Google Sheets concurrency limitations above.
+4. Upload the service account JSON as a Railway
+   [volume](https://docs.railway.com/reference/volumes) or paste its
+   contents into a variable and write it to disk at boot, rather than
+   committing it, and point `GOOGLE_SERVICE_ACCOUNT` at that path.
 
 **Frontend** — it's a folder of static files, so any static host works
 (Vercel, Netlify, GitHub Pages, S3 + CloudFront, nginx, etc.):
