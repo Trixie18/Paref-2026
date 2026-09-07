@@ -2,6 +2,7 @@
 //   signUp(email, password) -> Promise<void>
 //   signIn(email, password) -> Promise<void>
 //   signOut() -> Promise<void>
+//   resetPassword(email) -> Promise<void>   (always resolves - doesn't reveal whether the email has an account)
 //   getIdToken() -> Promise<string|null>   (the bearer token, or null if signed out)
 //   getCurrentUser() -> {uid, email} | null   (synchronous, reads local state)
 //   onAuthChange(callback) -> unsubscribe()   (fires with the current user whenever it changes)
@@ -125,6 +126,10 @@ export async function devSignOut() {
   notify(null);
 }
 
+export async function devResetPassword(_email) {
+  void _email; // dev mode has no real passwords or email delivery to reset
+}
+
 export async function devGetIdToken() {
   const session = readCurrentSession();
   if (!session) return null;
@@ -223,6 +228,21 @@ async function firebaseSignOutFn() {
   await authModule.signOut(auth);
 }
 
+async function firebaseResetPassword(email) {
+  const { auth, authModule } = await getFirebaseAuth();
+  try {
+    await authModule.sendPasswordResetEmail(auth, email);
+  } catch (err) {
+    // Firebase projects with Email Enumeration Protection (the default for
+    // new projects) never throw auth/user-not-found here - it resolves
+    // as if the email had been sent either way. Older projects can still
+    // throw it; treat it the same as success so this doesn't leak which
+    // emails have accounts.
+    if (err && err.code === "auth/user-not-found") return;
+    throw mapFirebaseError(err);
+  }
+}
+
 async function firebaseGetIdToken() {
   const { auth } = await getFirebaseAuth();
   if (!auth.currentUser) return null;
@@ -260,6 +280,10 @@ export async function signIn(email, password) {
 
 export async function signOut() {
   return AUTH_MODE === "firebase" ? firebaseSignOutFn() : devSignOut();
+}
+
+export async function resetPassword(email) {
+  return AUTH_MODE === "firebase" ? firebaseResetPassword(email) : devResetPassword(email);
 }
 
 export async function getIdToken() {

@@ -131,7 +131,8 @@ just renders a plain placeholder block on the shop page.
 
 ```
 frontend/
-  index.html, register.html, login.html, admin-login.html   - public pages
+  index.html, register.html, login.html,                    - public pages
+  admin-login.html, forgot-password.html
   dashboard.html, players.html, player-form.html,            - parent pages
   shop.html, cart.html, checkout.html, order.html,             (guarded by
   orders.html, profile.html                                    guard.js)
